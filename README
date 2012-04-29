@@ -5,10 +5,10 @@ Lisp을 좋아하는 사람들의 그룹(http://groups.google.com/group/lisp-kor
 
 ### for development
        $ lein deps
-	   $ lein swank-clojure
+	   $ lein swank
 ### for test
        $ lein deps
-	   $ lein ring server
+	   $ lein run
 
 ## License
 
