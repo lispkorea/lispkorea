@@ -1,24 +1,13 @@
 (ns lispkorea.model
-  (:use somnium.congomongo)
-  (:use [somnium.congomongo.config :only [*mongo-config*]]))
+  (:require [monger.core :as mg])
+  (:import [com.mongodb MongoOptions ServerAddress]))
 
-(defn split-mongo-url [url]
-  "Parses mongodb url from heroku, eg. mongodb://user:pass@localhost:1234/db"
-  (let [matcher (re-matcher #"^.*://(.*?):(.*?)@(.*?):(\d+)/(.*)$" url)]
-    (when (.find matcher)
-      (zipmap [:match :user :pass :host :port :db]
-              (re-groups matcher)))))
+(defn connect [& url]
+  (if url
+    (mg/connect-via-uri! url)
+    (let [mongohq-url (get (System/getenv) "MONGOHQ_URL")]
+      (if mongohq-url
+        (mg/connect-via-uri! mongohq-url)
+        (mg/connect!)))))
 
-(defn maybe-init [url]
-  "Checks if connection and collection exist, otherwise initialize."
-  (when (not (connection? *mongo-config*))
-    (let [mongo-url (or (get (System/getenv) "MONGOHQ_URL")
-                        url)
-          config    (split-mongo-url mongo-url)] 
-      (mongo! :db (:db config)
-              :host (:host config)
-              :port (Integer. (:port config))) 
-      (authenticate (:user config)
-                    (:pass config)) 
-      (when (not (collection-exists? :user))
-        (create-collection! :user)))))
+(def ^{:dynamic true} *conn* (connect))
