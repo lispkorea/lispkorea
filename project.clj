@@ -3,6 +3,7 @@
   :dependencies [[org.clojure/clojure "1.3.0"]
                  [com.novemberain/monger "1.0.0-beta5"]
                  [noir "1.2.2"]
-                 [enlive "1.0.0"]]
+                 [enlive "1.0.0"]
+                 [org.openid4java/openid4java "0.9.5"]]
   :main lispkorea.server)
 
