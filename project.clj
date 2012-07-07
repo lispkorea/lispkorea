@@ -5,5 +5,8 @@
                  [noir "1.2.2"]
                  [enlive "1.0.0"]
                  [org.openid4java/openid4java "0.9.5"]]
+  :plugins [[lein-beanstalk "0.2.2"]
+            [swank-clojure "1.3.3"]]
+  :ring {:handler lispkorea.server/handler}
   :main lispkorea.server)
 
