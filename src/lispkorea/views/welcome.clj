@@ -2,6 +2,7 @@
   (:require [net.cgrand.enlive-html :as html]
             [noir.session :as session])
   (:use [noir.core :only [defpage]]
+        [noir.request :only [ring-request]]
         [noir.response :only [redirect]]
         [lispkorea.model.user :only [get-user-by-email]])
   (:import [org.openid4java.consumer ConsumerManager]))
@@ -16,9 +17,14 @@
   (let [user (session/get :logined-user)]
     (index user)))
 
-(defpage "/login" []  
-  (let [cm (ConsumerManager.)
-        return-url "http://localhost:8080/auth"
+(defpage "/login" []
+  (let [request (ring-request)
+        server-name (:server-name request)
+        server-port (:server-port request)
+        server-scheme (name (:scheme request))
+        cm (ConsumerManager.)
+        return-url (str server-scheme "://" server-name ":"
+                        server-port "/auth")
         user-supplied-string "https://www.google.com/accounts/o8/id"
         discoveries (.discover cm user-supplied-string)
         discovered (.associate cm discoveries)
@@ -43,8 +49,3 @@
       (session/remove! :logined-user))
     (redirect "/")))
 
-
-      
-    
-    
-    
