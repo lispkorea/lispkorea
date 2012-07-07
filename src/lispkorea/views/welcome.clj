@@ -8,8 +8,9 @@
 
 (html/deftemplate index "lispkorea/template/index.html"
   [user]
-  
-  [:#login] (html/content (if user "logout" "login")))
+  [:#username] (if user
+                 (html/content (:email user))
+                 (html/content "login")))
 
 (defpage "/" []
   (let [user (session/get :logined-user)]
@@ -35,6 +36,13 @@
     (when user
       (session/put! :logined-user user))
     (redirect "/")))
+
+(defpage "/logout" {:as req}
+  (let [user (session/get :logined-user)]
+    (when user
+      (session/remove! :logined-user))
+    (redirect "/")))
+
 
       
     
