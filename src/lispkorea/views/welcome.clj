@@ -8,16 +8,21 @@
   (:import [org.openid4java.consumer ConsumerManager]))
 
 (html/deftemplate index "lispkorea/template/index.html"
-  [user]
-  [:#username] (if user
+  [ctx]
+  [:#username] (if (:user ctx)
                  (html/do->
                    (html/set-attr :href "#")
-                   (html/content (:email user)))
-                 (html/content "login")))
+                   (html/content (:email (:user ctx))))
+                 (html/content "login"))
+  [:#flash] (when (:flash ctx)
+              identity)
+  [:#flash :> html/text-node] (constantly (:flash ctx)))
 
 (defpage "/" []
-  (let [user (session/get :logined-user)]
-    (index user)))
+  (let [user (session/get :logined-user)
+        flash (session/flash-get)]
+    (index {:user user
+            :flash flash})))
 
 (defpage "/login" []
   (let [request (ring-request)
@@ -41,8 +46,9 @@
 (defpage "/auth" {:as req}
   (let [email (req "openid.ext1.value.email")
         user (get-user-by-email email)]
-    (when user
-      (session/put! :logined-user user))
+    (if user
+      (session/put! :logined-user user)
+      (session/flash-put! "User doesn't exists!"))
     (redirect "/")))
 
 (defpage "/logout" {:as req}
