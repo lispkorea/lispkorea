@@ -10,7 +10,9 @@
 (html/deftemplate index "lispkorea/template/index.html"
   [user]
   [:#username] (if user
-                 (html/content (:email user))
+                 (html/do->
+                   (html/set-attr :href "#")
+                   (html/content (:email user)))
                  (html/content "login")))
 
 (defpage "/" []
