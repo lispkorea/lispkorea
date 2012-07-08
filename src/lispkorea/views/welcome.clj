@@ -16,7 +16,7 @@
                  (html/content "login"))
   [:#flash] (when (:flash ctx)
               identity)
-  [:#flash :> html/text-node] (constantly (:flash ctx)))
+  [:#flash :> :span] (constantly (:flash ctx)))
 
 (defpage "/" []
   (let [user (session/get :logined-user)
