@@ -1,15 +1,6 @@
 # lispkorea
 Lisp을 좋아하는 사람들의 그룹(http://groups.google.com/group/lisp-korea)의 웹사이트입니다.
 
-## Usage
-
-### for development
-       $ lein deps
-	   $ lein swank
-### for test
-       $ lein deps
-	   $ lein run
-
 ## License
 
 Copyright (C) 2010 FIXME

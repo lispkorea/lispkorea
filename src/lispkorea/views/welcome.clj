@@ -1,28 +1,17 @@
 (ns lispkorea.views.welcome
-  (:require [net.cgrand.enlive-html :as html]
-            [noir.session :as session])
+  (:require [noir.session :as session]
+            [lispkorea.template :as template])
   (:use [noir.core :only [defpage]]
         [noir.request :only [ring-request]]
         [noir.response :only [redirect]]
+        [lispkorea.global :only [*user* *flash*]]
         [lispkorea.model.user :only [get-user-by-email]])
   (:import [org.openid4java.consumer ConsumerManager]))
 
-(html/deftemplate index "lispkorea/template/index.html"
-  [ctx]
-  [:#username] (if (:user ctx)
-                 (html/do->
-                   (html/set-attr :href "#")
-                   (html/content (:email (:user ctx))))
-                 (html/content "login"))
-  [:#flash] (when (:flash ctx)
-              identity)
-  [:#flash :> :span] (constantly (:flash ctx)))
-
 (defpage "/" []
-  (let [user (session/get :logined-user)
-        flash (session/flash-get)]
-    (index {:user user
-            :flash flash})))
+  (binding [*user* (session/get :logined-user)
+            *flash* (session/flash-get :login-error)]
+    (template/html-doc)))
 
 (defpage "/login" []
   (let [request (ring-request)
@@ -48,7 +37,7 @@
         user (get-user-by-email email)]
     (if user
       (session/put! :logined-user user)
-      (session/flash-put! "User doesn't exists!"))
+      (session/flash-put! :login-error "User doesn't exists!"))
     (redirect "/")))
 
 (defpage "/logout" {:as req}

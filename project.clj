@@ -3,11 +3,9 @@
   :dependencies [[org.clojure/clojure "1.4.0"]
                  [com.novemberain/monger "1.1.2"]
                  [noir "1.3.0-beta10"]
-                 [enlive "1.0.0"]
                  [org.openid4java/openid4java "0.9.5"]]
   :plugins [[lein-beanstalk "0.2.2"]
-            [lein-ring "0.7.1"]
-            [lein-swank "1.4.4"]]
-  :ring {:handler lispkorea.server/handler}
-  :main lispkorea.server)
+            [lein-ring "0.7.1"]]
+  :main lispkorea.core
+  :ring {:handler lispkorea.server/handler})
 
