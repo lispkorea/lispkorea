@@ -1,19 +1,14 @@
 (ns lispkorea.model
   (:require [monger.core :as mg]
-            [monger.collection :as mc]))
+            [monger.collection :as mc]
+            [lispkorea.config :as config]))
 
-(defn connect [& url]
-  (if url
+(defn connect []
+  (if-let [url config/mongodb-url]
     (mg/connect-via-uri! url)
-    (let [mongohq-url (get (System/getenv) "MONGOHQ_URL")]
-      (if mongohq-url
-        (mg/connect-via-uri! mongohq-url)
-        (mg/connect!)))))
-
-(def ^{:dynamic true} *conn* (connect))
-(def ^{:dynamic true} *db* (mg/get-db *conn* "lispkorea"))
-(when *db*
-  (mg/set-db! *db*))
+    (do
+      (mg/connect!)
+      (mg/set-db!(mg/get-db "mydb")))))
 
 (defmacro defcrud [name]
   `(do
@@ -32,4 +27,7 @@
      (intern ~*ns* '~'remove! (fn [~'arg]
                                 (let [~'id (or (:_id ~'arg) (ObjectId. ~'arg))]
                                   (mc/remove ~name {:_id ~'id}))))))
-     
+
+
+(defn prepare []
+  (connect))
