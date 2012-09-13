@@ -1,7 +1,13 @@
 (ns lispkorea.server
-  (:require [noir.server :as server]))
+  (:require [noir.server :as server])
+  (:use [lispkorea.global :only [*request*]]))
 
 (server/load-views "src/lispkorea/views/")
+(server/add-middleware
+ (fn [handler]
+   (fn [request]
+     (binding [*request* request]
+       (handler request)))))
 
 (def handler (server/gen-handler {:mode :dev
                                   :ns 'lispkorea.server}))
