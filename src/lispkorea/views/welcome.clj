@@ -1,11 +1,10 @@
 (ns lispkorea.views.welcome
   (:require [noir.session :as session]
-            [lispkorea.template :as template])
+            [lispkorea.template :as template]
+            [lispkorea.model :as model])
   (:use [noir.core :only [defpage]]
-        [noir.request :only [ring-request]]
         [noir.response :only [redirect]]
-        [lispkorea.global :only [*user* *flash*]]
-        [lispkorea.model.user :only [get-user-by-email]])
+        [lispkorea.global :only [*user* *flash* *request*]])
   (:import [org.openid4java.consumer ConsumerManager]))
 
 (defpage "/" []
@@ -14,10 +13,9 @@
     (template/html-doc)))
 
 (defpage "/login" []
-  (let [request (ring-request)
-        server-name (:server-name request)
-        server-port (:server-port request)
-        server-scheme (name (:scheme request))
+  (let [server-name (:server-name *request*)
+        server-port (:server-port *request*)
+        server-scheme (name (:scheme *request*))
         cm (ConsumerManager.)
         return-url (str server-scheme "://" server-name ":"
                         server-port "/auth")
@@ -34,7 +32,7 @@
 
 (defpage "/auth" {:as req}
   (let [email (req "openid.ext1.value.email")
-        user (get-user-by-email email)]
+        user (model/get-user {:email email})]
     (if user
       (session/put! :logined-user user)
       (session/flash-put! :login-error "User doesn't exists!"))
