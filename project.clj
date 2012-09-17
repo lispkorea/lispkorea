@@ -8,5 +8,6 @@
             [lein-ring "0.7.1"]]
   :main lispkorea.core
   :ring {:handler lispkorea.server/handler
-         :init lispkorea.model/prepare})
+         :init lispkorea.model/prepare}
+  :eval-in-leiningen true)
 
