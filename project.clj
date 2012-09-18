@@ -6,8 +6,6 @@
                  [org.openid4java/openid4java "0.9.5"]]
   :plugins [[lein-beanstalk "0.2.2"]
             [lein-ring "0.7.1"]]
-  :main lispkorea.core
+  :main lispkorea.server
   :ring {:handler lispkorea.server/handler
-         :init lispkorea.model/prepare}
-  :eval-in-leiningen true)
-
+         :init lispkorea.model/prepare})
