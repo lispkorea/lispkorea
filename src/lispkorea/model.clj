@@ -12,24 +12,6 @@
       (mg/connect!)
       (mg/set-db!(mg/get-db "mydb")))))
 
-(defmacro defcrud [name]
-  `(do
-     (intern ~*ns*
-             '~'get-by-id
-             (fn [~'id]
-               (mc/find-one-as-map ~name {:_id (ObjectId. ~'id)})))
-     (intern ~*ns*
-             '~'get-by
-             (fn [~'p]
-               (mc/find-one-as-map ~name ~'p)))
-     (intern ~*ns* '~'add! (fn [~'p]
-                             (mc/insert ~name ~'p)))
-     (intern ~*ns* '~'edit! (fn [~'p]
-                              (mc/update ~name {:_id (:id ~'p)} ~'p)))
-     (intern ~*ns* '~'remove! (fn [~'arg]
-                                (let [~'id (or (:_id ~'arg) (ObjectId. ~'arg))]
-                                  (mc/remove ~name {:_id ~'id}))))))
-
 (defprotocol IDocumentable
   "Representable protocol for mongodb's document name"
   (docname [e]))
@@ -66,7 +48,8 @@
   (let [name (docname type)
         constructor (symbol (str type "/create"))
         fn-get-by-id (symbol (str "get-" name "-by-id"))
-        fn-get (symbol (str "get-" name))]
+        fn-get (symbol (str "get-" name))
+        fn-gets (symbol (str "get-" name "s"))]
     `(do
        (defrecord ~type ~args
          ~@body)
@@ -74,6 +57,9 @@
          (let [m# (mc/find-one-as-map ~name p#)]
            (when m#
              (~constructor m#))))
+       (defn ~fn-gets [p#]
+         (let [ms# (mc/find-maps ~name p#)]
+           (map (fn [m#] (~constructor m#)) ms#)))
        (defn ~fn-get-by-id [id#]
          (try
            (~fn-get {:_id (ObjectId. id#)})

@@ -25,3 +25,13 @@
           (model/remove! user#)))
      '(require '[lispkorea.model :as model]))))
 
+(defn list-user [project & args]
+  "Listing user account"
+  (eval-in-project
+   project
+   `(do
+      (model/prepare)
+      (doseq [u# (model/get-users {})]
+        (println u#)))
+   '(require '[lispkorea.model :as model])))
+
