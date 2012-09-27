@@ -13,7 +13,9 @@
      [:meta {:content "", :name "description"}]
      [:meta {:content "", :name "author"}]
      (include-css "/css/bootstrap.min.css")
-     (include-css "/css/bootstrap-responsive.min.css")]
+     (include-css "/css/bootstrap-responsive.min.css")
+     [:link {:rel "stylesheet/less" :type "text/css" :href "/css/style.less"}]
+     (include-js "/js/less-1.3.0.min.js")]
     [:body {:style "padding-top: 60px"}
      [:div.navbar.navbar-inverse.navbar-fixed-top
       [:div.navbar-inner
@@ -21,9 +23,10 @@
         [:a.brand {:href "#"} "Lisp Korea"]
         [:div.nav-collapse.collapse
          [:ul.nav
-          [:li.active [:a {:href "#"} "Home"]]
-          [:li [:a {:href "#about"} "About"]]
-          [:li [:a {:href "#contact"} "Contact"]]]]
+          [:li [:a {:href "#contact"} "스터디"]]
+          [:li [:a {:href "#contact"} "커뮤니티"]]
+          [:li [:a {:href "#contact"} "자료실"]]
+          [:li [:a {:href "#contact"} "위키"]]]]
         [:div.btn-group.pull-right
          (if (and (bound? #'*user*) *user*)
            [:ul.dropdown-menu

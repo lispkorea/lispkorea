@@ -13,7 +13,7 @@
                              [:span {:class "date"} created-at]
                              [:a {:href url :class "title"} title]])
                           data)]]
-    [:div {:class "dashboard-item"}
+    [:div {:class "dashboard-box"}
      [:h1 title]
      ul]))
 
