@@ -7,10 +7,39 @@
         [lispkorea.global :only [*user* *flash* *request*]])
   (:import [org.openid4java.consumer ConsumerManager]))
 
+(defn- build-dashboard-box [title data]
+  (let [ul [:ul (map (fn [[created-at title url]]
+                            [:li
+                             [:span {:class "date"} created-at]
+                             [:a {:href url :class "title"} title]])
+                          data)]]
+    [:div {:class "dashboard-item"}
+     [:h1 title]
+     ul]))
+
 (defpage "/" []
   (binding [*user* (session/get :logined-user)
             *flash* (session/flash-get :login-error)]
-    (template/html-doc)))
+    (template/html-doc (build-dashboard-box
+                        "공지사항"
+                        [["2012-09-08" "공지사항입니다." "http://google.com"]
+                         ["2012-09-08" "공지사항입니다." "http://google.com"]
+                         ["2012-09-08" "공지사항입니다." "http://google.com"]])
+                       (build-dashboard-box
+                        "뉴스"
+                        [["2012-09-08" "공지사항입니다." "http://google.com"]
+                         ["2012-09-08" "공지사항입니다." "http://google.com"]
+                         ["2012-09-08" "공지사항입니다." "http://google.com"]])
+                       (build-dashboard-box
+                        "질의/응답"
+                        [["2012-09-08" "공지사항입니다." "http://google.com"]
+                         ["2012-09-08" "공지사항입니다." "http://google.com"]
+                         ["2012-09-08" "공지사항입니다." "http://google.com"]])
+                       (build-dashboard-box
+                        "게시판"
+                        [["2012-09-08" "공지사항입니다." "http://google.com"]
+                         ["2012-09-08" "공지사항입니다." "http://google.com"]
+                         ["2012-09-08" "공지사항입니다." "http://google.com"]]))))
 
 (defpage "/login" []
   (let [server-name (:server-name *request*)
