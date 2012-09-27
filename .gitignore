@@ -6,5 +6,6 @@ classes
 target
 .lein/*
 .lein-deps-sum
+.lein-failures
 .lein-plugins/*
 .repl/*
