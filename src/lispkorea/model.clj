@@ -73,7 +73,20 @@
   (toString [_]
             (format "User<_id=%s, email=%s>" _id email)))
 
+(defentity Post [_id
+                 title
+                 content
+                 created-at
+                 creator]
+  Object
+  (toString [_]
+            (format "Post<_id=%s, title=%s, creator=%s>"
+                    _id title creator)))
+
 (extend User
+  IEntity
+  entity-fns)
+(extend Post
   IEntity
   entity-fns)
 
