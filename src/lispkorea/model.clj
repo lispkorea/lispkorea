@@ -20,7 +20,8 @@
   "Protocol of whole entity."
   (add! [e])
   (edit! [e])
-  (remove! [e]))
+  (remove! [e])
+  (init [e]))
 
 (extend-protocol IDocumentable
   java.lang.String
@@ -53,18 +54,23 @@
     `(do
        (defrecord ~type ~args
          ~@body)
-       (defn ~fn-get [p#]
-         (let [m# (mc/find-one-as-map ~name p#)]
-           (when m#
-             (~constructor m#))))
-       (defn ~fn-gets [p#]
-         (let [ms# (mc/find-maps ~name p#)]
-           (map (fn [m#] (~constructor m#)) ms#)))
-       (defn ~fn-get-by-id [id#]
-         (try
-           (~fn-get {:_id (ObjectId. id#)})
-           (catch java.lang.IllegalArgumentException iae#
-             nil))))))
+       (extend ~type
+         IEntity
+         entity-fns)
+       (let [constructor# (fn [m#]
+                            (init (~constructor m#)))]
+         (defn ~fn-get [p#]
+           (let [m# (mc/find-one-as-map ~name p#)]
+             (when m#
+               (constructor# m#))))
+         (defn ~fn-gets [p#]
+           (let [ms# (mc/find-maps ~name p#)]
+             (map (fn [m#] (constructor# m#)) ms#)))
+         (defn ~fn-get-by-id [id#]
+           (try
+             (~fn-get {:_id (ObjectId. id#)})
+             (catch java.lang.IllegalArgumentException iae#
+               nil)))))))
 
 (defentity User [_id
                  email
@@ -82,13 +88,14 @@
   (toString [_]
             (format "Post<_id=%s, title=%s, creator=%s>"
                     _id title creator)))
-
-(extend User
-  IEntity
-  entity-fns)
 (extend Post
   IEntity
-  entity-fns)
+  (merge entity-fns
+         {:init
+          (fn [e]
+            (if-let [creator (:creator e)]
+              (assoc e :creator (User/create creator))
+              e))}))
 
 (defn init-index []
   (mc/ensure-index (docname User) {:email 1} {:unique true}))
