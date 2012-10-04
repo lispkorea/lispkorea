@@ -36,7 +36,8 @@
       (docname (last (split fullname #"\."))))))
 
 (def ^:private entity-fns
-  {:add! (fn [e]
+  {:init (fn [e] e)
+   :add! (fn [e]
            (mc/insert-and-return (docname (type e)) e))
    :edit! (fn [e]
             (mc/update (docname (type e)) {:_id (:_id e)} e))
