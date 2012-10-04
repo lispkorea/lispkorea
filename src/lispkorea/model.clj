@@ -84,11 +84,12 @@
                  title
                  content
                  created-at
-                 creator]
+                 creator
+                 type]
   Object
   (toString [_]
-            (format "Post<_id=%s, title=%s, creator=%s>"
-                    _id title creator)))
+            (format "Post<_id=%s, type=%s, title=%s, creator=%s>"
+                    _id type title creator)))
 (extend Post
   IEntity
   (merge entity-fns

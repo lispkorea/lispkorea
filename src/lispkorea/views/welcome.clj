@@ -2,9 +2,10 @@
   (:require [noir.session :as session]
             [lispkorea.template :as template]
             [lispkorea.model :as model])
-  (:use [noir.core :only [defpage]]
+  (:use [noir.core :only [defpage url-for]]
         [noir.response :only [redirect]]
-        [lispkorea.global :only [*user* *flash* *request*]])
+        [lispkorea.global :only [*user* *flash* *request*]]
+        [lispkorea.views.post :only [get-post]])
   (:import [org.openid4java.consumer ConsumerManager]))
 
 (defn- build-dashboard-box [title data]
@@ -17,29 +18,26 @@
      [:h1 title]
      ul]))
 
+(defn- serialize-posts [p]
+  [(:created-at p)
+   (:title p)
+   (url-for get-post p)])
+
 (defpage "/" []
   (binding [*user* (session/get :logined-user)
             *flash* (session/flash-get :login-error)]
     (template/html-doc (build-dashboard-box
                         "공지사항"
-                        [["2012-09-08" "공지사항입니다." "http://google.com"]
-                         ["2012-09-08" "공지사항입니다." "http://google.com"]
-                         ["2012-09-08" "공지사항입니다." "http://google.com"]])
+                        (map serialize-posts (model/get-posts {:type "notice"})))
                        (build-dashboard-box
                         "뉴스"
-                        [["2012-09-08" "공지사항입니다." "http://google.com"]
-                         ["2012-09-08" "공지사항입니다." "http://google.com"]
-                         ["2012-09-08" "공지사항입니다." "http://google.com"]])
+                        (map serialize-posts (model/get-posts {:type "news"})))
                        (build-dashboard-box
                         "질의/응답"
-                        [["2012-09-08" "공지사항입니다." "http://google.com"]
-                         ["2012-09-08" "공지사항입니다." "http://google.com"]
-                         ["2012-09-08" "공지사항입니다." "http://google.com"]])
+                        (map serialize-posts (model/get-posts {:type "q&a"})))
                        (build-dashboard-box
                         "게시판"
-                        [["2012-09-08" "공지사항입니다." "http://google.com"]
-                         ["2012-09-08" "공지사항입니다." "http://google.com"]
-                         ["2012-09-08" "공지사항입니다." "http://google.com"]]))))
+                        (map serialize-posts (model/get-posts {:type "bbs"}))))))
 
 (defpage "/login" []
   (let [server-name (:server-name *request*)
