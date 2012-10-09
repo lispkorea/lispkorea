@@ -3,7 +3,8 @@
   :dependencies [[org.clojure/clojure "1.4.0"]
                  [com.novemberain/monger "1.2.0"]
                  [noir "1.3.0-beta10"]
-                 [org.openid4java/openid4java "0.9.5"]]
+                 [org.openid4java/openid4java "0.9.5"]
+                 [cheshire "4.0.3"]]
   :plugins [[lein-beanstalk "0.2.2"]
             [lein-ring "0.7.1"]]
   :main lispkorea.server

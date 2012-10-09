@@ -1,9 +1,18 @@
 (ns lispkorea.model
   (:require [monger.core :as mg]
             [monger.collection :as mc]
-            [lispkorea.config :as config])
+            [lispkorea.config :as config]
+            [cheshire.custom :as cheshire])
   (:use [clojure.string :only [lower-case split]])
   (:import [org.bson.types ObjectId]))
+
+(try
+  (cheshire/add-encoder
+   ObjectId
+   (fn [^ObjectId oid ^com.fasterxml.jackson.core.json.WriterBasedJsonGenerator generator]
+     (.writeString generator (.toString oid))))
+  (catch Throwable t
+    false))
 
 (defn connect []
   (if-let [url config/mongodb-url]
