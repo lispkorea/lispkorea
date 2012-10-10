@@ -1,6 +1,7 @@
 (ns lispkorea.model
   (:require [monger.core :as mg]
             [monger.collection :as mc]
+            [monger.query :as query]
             [lispkorea.config :as config]
             [cheshire.custom :as cheshire])
   (:use [clojure.string :only [lower-case split]])
@@ -60,7 +61,8 @@
         constructor (symbol (str type "/create"))
         fn-get-by-id (symbol (str "get-" name "-by-id"))
         fn-get (symbol (str "get-" name))
-        fn-gets (symbol (str "get-" name "s"))]
+        fn-gets (symbol (str "get-" name "s"))
+        mc-with-col (symbol (str "with-" name "s"))]
     `(do
        (defrecord ~type ~args
          ~@body)
@@ -80,7 +82,9 @@
            (try
              (~fn-get {:_id (ObjectId. id#)})
              (catch java.lang.IllegalArgumentException iae#
-               nil)))))))
+               nil)))
+         (defmacro ~mc-with-col [& body#]
+           `(query/with-collection ~~name ~@body#))))))
 
 (defentity User [_id
                  email
